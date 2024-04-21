@@ -1,0 +1,25 @@
+enum Priority {
+  HIGHEST
+  HIGH
+  MEDIUM
+  LOW
+  LOWEST
+}
+
+type ToDoList @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  desc: String
+  toDo_s: [ToDo] @hasMany(indexName: "byToDoList", fields: ["id"])
+}
+
+type ToDo @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  desc: String
+  priority: Priority!
+  todolistID: ID! @index(name: "byToDoList")
+  createdDate: AWSDateTime
+  completedDate: AWSDateTime
+  dueDate: AWSDateTime
+}

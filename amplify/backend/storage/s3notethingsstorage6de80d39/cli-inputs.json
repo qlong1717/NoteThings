@@ -1,0 +1,14 @@
+{
+  "resourceName": "s3notethingsstorage6de80d39",
+  "bucketName": "notethings-storage-6de80d39",
+  "policyUUID": "9d2467bf",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ]
+}
