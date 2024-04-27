@@ -1,12 +1,18 @@
-.heading-top {
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  gap: 1em;
-  padding: 1rem 2rem;
-  background-color: #f0f0f000;
+:root{
+  background-color:#121212;
 }
 
-.App{
-  
+.heading-top {
+  display: flex;
+  justify-content:space-between;
+  width: 95%;
+  position: fixed;
+  margin-left: 18px;
+  margin-top: 1px;
+  padding: 3px 25px;
+  border: 2px solid #121212;
+  border-radius: 25px;
+  background-color: #2a2929;
+  align-items: center;
+  transition: background-color 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out;
 }
