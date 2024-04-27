@@ -15,14 +15,15 @@ import {
   Grid,
   Icon,
   ScrollView,
+  SelectField,
   Text,
   TextField,
   useTheme,
 } from "@aws-amplify/ui-react";
 import { fetchByPath, getOverrideProps, validateField } from "./utils";
 import { generateClient } from "aws-amplify/api";
-import { listToDos } from "../graphql/queries";
-import { createToDoList, updateToDo } from "../graphql/mutations";
+import { listToDoLists } from "../graphql/queries";
+import { createToDo } from "../graphql/mutations";
 const client = generateClient();
 function ArrayField({
   items = [],
@@ -179,7 +180,7 @@ function ArrayField({
     </React.Fragment>
   );
 }
-export default function ToDoListCreateForm(props) {
+export default function ToDoCreateForm(props) {
   const {
     clearOnSuccess = true,
     onSuccess,
@@ -194,42 +195,57 @@ export default function ToDoListCreateForm(props) {
   const initialValues = {
     title: "",
     desc: "",
-    toDo_s: [],
+    priority: "",
+    todolistID: undefined,
+    createdDate: "",
+    completedDate: "",
+    dueDate: "",
   };
   const [title, setTitle] = React.useState(initialValues.title);
   const [desc, setDesc] = React.useState(initialValues.desc);
-  const [toDo_s, setToDo_s] = React.useState(initialValues.toDo_s);
-  const [toDo_sLoading, setToDo_sLoading] = React.useState(false);
-  const [toDo_sRecords, setToDo_sRecords] = React.useState([]);
+  const [priority, setPriority] = React.useState(initialValues.priority);
+  const [todolistID, setTodolistID] = React.useState(initialValues.todolistID);
+  const [todolistIDLoading, setTodolistIDLoading] = React.useState(false);
+  const [todolistIDRecords, setTodolistIDRecords] = React.useState([]);
+  const [selectedTodolistIDRecords, setSelectedTodolistIDRecords] =
+    React.useState([]);
+  const [createdDate, setCreatedDate] = React.useState(
+    initialValues.createdDate
+  );
+  const [completedDate, setCompletedDate] = React.useState(
+    initialValues.completedDate
+  );
+  const [dueDate, setDueDate] = React.useState(initialValues.dueDate);
   const autocompleteLength = 10;
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
     setTitle(initialValues.title);
     setDesc(initialValues.desc);
-    setToDo_s(initialValues.toDo_s);
-    setCurrentToDo_sValue(undefined);
-    setCurrentToDo_sDisplayValue("");
+    setPriority(initialValues.priority);
+    setTodolistID(initialValues.todolistID);
+    setCurrentTodolistIDValue(undefined);
+    setCurrentTodolistIDDisplayValue("");
+    setCreatedDate(initialValues.createdDate);
+    setCompletedDate(initialValues.completedDate);
+    setDueDate(initialValues.dueDate);
     setErrors({});
   };
-  const [currentToDo_sDisplayValue, setCurrentToDo_sDisplayValue] =
+  const [currentTodolistIDDisplayValue, setCurrentTodolistIDDisplayValue] =
     React.useState("");
-  const [currentToDo_sValue, setCurrentToDo_sValue] = React.useState(undefined);
-  const toDo_sRef = React.createRef();
-  const getIDValue = {
-    toDo_s: (r) => JSON.stringify({ id: r?.id }),
-  };
-  const toDo_sIdSet = new Set(
-    Array.isArray(toDo_s)
-      ? toDo_s.map((r) => getIDValue.toDo_s?.(r))
-      : getIDValue.toDo_s?.(toDo_s)
-  );
+  const [currentTodolistIDValue, setCurrentTodolistIDValue] =
+    React.useState(undefined);
+  const todolistIDRef = React.createRef();
   const getDisplayValue = {
-    toDo_s: (r) => `${r?.title ? r?.title + " - " : ""}${r?.id}`,
+    todolistID: (r) => `${r?.title ? r?.title + " - " : ""}${r?.id}`,
   };
   const validations = {
     title: [{ type: "Required" }],
     desc: [],
-    toDo_s: [],
+    priority: [{ type: "Required" }],
+    todolistID: [{ type: "Required" }],
+    createdDate: [],
+    completedDate: [],
+    dueDate: [],
   };
   const runValidationTasks = async (
     fieldName,
@@ -248,8 +264,25 @@ export default function ToDoListCreateForm(props) {
     setErrors((errors) => ({ ...errors, [fieldName]: validationResponse }));
     return validationResponse;
   };
-  const fetchToDo_sRecords = async (value) => {
-    setToDo_sLoading(true);
+  const convertToLocal = (date) => {
+    const df = new Intl.DateTimeFormat("default", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      calendar: "iso8601",
+      numberingSystem: "latn",
+      hourCycle: "h23",
+    });
+    const parts = df.formatToParts(date).reduce((acc, part) => {
+      acc[part.type] = part.value;
+      return acc;
+    }, {});
+    return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
+  };
+  const fetchTodolistIDRecords = async (value) => {
+    setTodolistIDLoading(true);
     const newOptions = [];
     let newNext = "";
     while (newOptions.length < autocompleteLength && newNext != null) {
@@ -264,21 +297,19 @@ export default function ToDoListCreateForm(props) {
       }
       const result = (
         await client.graphql({
-          query: listToDos.replaceAll("__typename", ""),
+          query: listToDoLists.replaceAll("__typename", ""),
           variables,
         })
-      )?.data?.listToDos?.items;
-      var loaded = result.filter(
-        (item) => !toDo_sIdSet.has(getIDValue.toDo_s?.(item))
-      );
+      )?.data?.listToDoLists?.items;
+      var loaded = result.filter((item) => todolistID !== item.id);
       newOptions.push(...loaded);
       newNext = result.nextToken;
     }
-    setToDo_sRecords(newOptions.slice(0, autocompleteLength));
-    setToDo_sLoading(false);
+    setTodolistIDRecords(newOptions.slice(0, autocompleteLength));
+    setTodolistIDLoading(false);
   };
   React.useEffect(() => {
-    fetchToDo_sRecords("");
+    fetchTodolistIDRecords("");
   }, []);
   return (
     <Grid
@@ -291,28 +322,24 @@ export default function ToDoListCreateForm(props) {
         let modelFields = {
           title,
           desc,
-          toDo_s,
+          priority,
+          todolistID,
+          createdDate,
+          completedDate,
+          dueDate,
         };
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
             if (Array.isArray(modelFields[fieldName])) {
               promises.push(
                 ...modelFields[fieldName].map((item) =>
-                  runValidationTasks(
-                    fieldName,
-                    item,
-                    getDisplayValue[fieldName]
-                  )
+                  runValidationTasks(fieldName, item)
                 )
               );
               return promises;
             }
             promises.push(
-              runValidationTasks(
-                fieldName,
-                modelFields[fieldName],
-                getDisplayValue[fieldName]
-              )
+              runValidationTasks(fieldName, modelFields[fieldName])
             );
             return promises;
           }, [])
@@ -329,38 +356,14 @@ export default function ToDoListCreateForm(props) {
               modelFields[key] = null;
             }
           });
-          const modelFieldsToSave = {
-            title: modelFields.title,
-            desc: modelFields.desc,
-          };
-          const toDoList = (
-            await client.graphql({
-              query: createToDoList.replaceAll("__typename", ""),
-              variables: {
-                input: {
-                  ...modelFieldsToSave,
-                },
+          await client.graphql({
+            query: createToDo.replaceAll("__typename", ""),
+            variables: {
+              input: {
+                ...modelFields,
               },
-            })
-          )?.data?.createToDoList;
-          const promises = [];
-          promises.push(
-            ...toDo_s.reduce((promises, original) => {
-              promises.push(
-                client.graphql({
-                  query: updateToDo.replaceAll("__typename", ""),
-                  variables: {
-                    input: {
-                      id: original.id,
-                      todolistID: toDoList.id,
-                    },
-                  },
-                })
-              );
-              return promises;
-            }, [])
-          );
-          await Promise.all(promises);
+            },
+          });
           if (onSuccess) {
             onSuccess(modelFields);
           }
@@ -374,7 +377,7 @@ export default function ToDoListCreateForm(props) {
           }
         }
       }}
-      {...getOverrideProps(overrides, "ToDoListCreateForm")}
+      {...getOverrideProps(overrides, "ToDoCreateForm")}
       {...rest}
     >
       <TextField
@@ -388,7 +391,11 @@ export default function ToDoListCreateForm(props) {
             const modelFields = {
               title: value,
               desc,
-              toDo_s,
+              priority,
+              todolistID,
+              createdDate,
+              completedDate,
+              dueDate,
             };
             const result = onChange(modelFields);
             value = result?.title ?? value;
@@ -414,7 +421,11 @@ export default function ToDoListCreateForm(props) {
             const modelFields = {
               title,
               desc: value,
-              toDo_s,
+              priority,
+              todolistID,
+              createdDate,
+              completedDate,
+              dueDate,
             };
             const result = onChange(modelFields);
             value = result?.desc ?? value;
@@ -429,84 +440,255 @@ export default function ToDoListCreateForm(props) {
         hasError={errors.desc?.hasError}
         {...getOverrideProps(overrides, "desc")}
       ></TextField>
-      <ArrayField
-        onChange={async (items) => {
-          let values = items;
+      <SelectField
+        label="Priority"
+        placeholder="Please select an option"
+        isDisabled={false}
+        value={priority}
+        onChange={(e) => {
+          let { value } = e.target;
           if (onChange) {
             const modelFields = {
               title,
               desc,
-              toDo_s: values,
+              priority: value,
+              todolistID,
+              createdDate,
+              completedDate,
+              dueDate,
             };
             const result = onChange(modelFields);
-            values = result?.toDo_s ?? values;
+            value = result?.priority ?? value;
           }
-          setToDo_s(values);
-          setCurrentToDo_sValue(undefined);
-          setCurrentToDo_sDisplayValue("");
+          if (errors.priority?.hasError) {
+            runValidationTasks("priority", value);
+          }
+          setPriority(value);
         }}
-        currentFieldValue={currentToDo_sValue}
-        label={"To do"}
-        items={toDo_s}
-        hasError={errors?.toDo_s?.hasError}
+        onBlur={() => runValidationTasks("priority", priority)}
+        errorMessage={errors.priority?.errorMessage}
+        hasError={errors.priority?.hasError}
+        {...getOverrideProps(overrides, "priority")}
+      >
+        <option
+          children="Highest"
+          value="HIGHEST"
+          {...getOverrideProps(overrides, "priorityoption0")}
+        ></option>
+        <option
+          children="High"
+          value="HIGH"
+          {...getOverrideProps(overrides, "priorityoption1")}
+        ></option>
+        <option
+          children="Medium"
+          value="MEDIUM"
+          {...getOverrideProps(overrides, "priorityoption2")}
+        ></option>
+        <option
+          children="Low"
+          value="LOW"
+          {...getOverrideProps(overrides, "priorityoption3")}
+        ></option>
+        <option
+          children="Lowest"
+          value="LOWEST"
+          {...getOverrideProps(overrides, "priorityoption4")}
+        ></option>
+      </SelectField>
+      <ArrayField
+        lengthLimit={1}
+        onChange={async (items) => {
+          let value = items[0];
+          if (onChange) {
+            const modelFields = {
+              title,
+              desc,
+              priority,
+              todolistID: value,
+              createdDate,
+              completedDate,
+              dueDate,
+            };
+            const result = onChange(modelFields);
+            value = result?.todolistID ?? value;
+          }
+          setTodolistID(value);
+          setCurrentTodolistIDValue(undefined);
+        }}
+        currentFieldValue={currentTodolistIDValue}
+        label={"Todolist"}
+        items={todolistID ? [todolistID] : []}
+        hasError={errors?.todolistID?.hasError}
         runValidationTasks={async () =>
-          await runValidationTasks("toDo_s", currentToDo_sValue)
+          await runValidationTasks("todolistID", currentTodolistIDValue)
         }
-        errorMessage={errors?.toDo_s?.errorMessage}
-        getBadgeText={getDisplayValue.toDo_s}
-        setFieldValue={(model) => {
-          setCurrentToDo_sDisplayValue(
-            model ? getDisplayValue.toDo_s(model) : ""
+        errorMessage={errors?.todolistID?.errorMessage}
+        getBadgeText={(value) =>
+          value
+            ? getDisplayValue.todolistID(
+                todolistIDRecords.find((r) => r.id === value) ??
+                  selectedTodolistIDRecords.find((r) => r.id === value)
+              )
+            : ""
+        }
+        setFieldValue={(value) => {
+          setCurrentTodolistIDDisplayValue(
+            value
+              ? getDisplayValue.todolistID(
+                  todolistIDRecords.find((r) => r.id === value) ??
+                    selectedTodolistIDRecords.find((r) => r.id === value)
+                )
+              : ""
           );
-          setCurrentToDo_sValue(model);
+          setCurrentTodolistIDValue(value);
+          const selectedRecord = todolistIDRecords.find((r) => r.id === value);
+          if (selectedRecord) {
+            setSelectedTodolistIDRecords([selectedRecord]);
+          }
         }}
-        inputFieldRef={toDo_sRef}
+        inputFieldRef={todolistIDRef}
         defaultFieldValue={""}
       >
         <Autocomplete
-          label="To do"
-          isRequired={false}
+          label="Todolist"
+          isRequired={true}
           isReadOnly={false}
-          placeholder="Search ToDo"
-          value={currentToDo_sDisplayValue}
-          options={toDo_sRecords
-            .filter((r) => !toDo_sIdSet.has(getIDValue.toDo_s?.(r)))
+          placeholder="Search ToDoList"
+          value={currentTodolistIDDisplayValue}
+          options={todolistIDRecords
+            .filter(
+              (r, i, arr) =>
+                arr.findIndex((member) => member?.id === r?.id) === i
+            )
             .map((r) => ({
-              id: getIDValue.toDo_s?.(r),
-              label: getDisplayValue.toDo_s?.(r),
+              id: r?.id,
+              label: getDisplayValue.todolistID?.(r),
             }))}
-          isLoading={toDo_sLoading}
+          isLoading={todolistIDLoading}
           onSelect={({ id, label }) => {
-            setCurrentToDo_sValue(
-              toDo_sRecords.find((r) =>
-                Object.entries(JSON.parse(id)).every(
-                  ([key, value]) => r[key] === value
-                )
-              )
-            );
-            setCurrentToDo_sDisplayValue(label);
-            runValidationTasks("toDo_s", label);
+            setCurrentTodolistIDValue(id);
+            setCurrentTodolistIDDisplayValue(label);
+            runValidationTasks("todolistID", label);
           }}
           onClear={() => {
-            setCurrentToDo_sDisplayValue("");
+            setCurrentTodolistIDDisplayValue("");
           }}
           onChange={(e) => {
             let { value } = e.target;
-            fetchToDo_sRecords(value);
-            if (errors.toDo_s?.hasError) {
-              runValidationTasks("toDo_s", value);
+            fetchTodolistIDRecords(value);
+            if (errors.todolistID?.hasError) {
+              runValidationTasks("todolistID", value);
             }
-            setCurrentToDo_sDisplayValue(value);
-            setCurrentToDo_sValue(undefined);
+            setCurrentTodolistIDDisplayValue(value);
+            setCurrentTodolistIDValue(undefined);
           }}
-          onBlur={() => runValidationTasks("toDo_s", currentToDo_sDisplayValue)}
-          errorMessage={errors.toDo_s?.errorMessage}
-          hasError={errors.toDo_s?.hasError}
-          ref={toDo_sRef}
+          onBlur={() =>
+            runValidationTasks("todolistID", currentTodolistIDValue)
+          }
+          errorMessage={errors.todolistID?.errorMessage}
+          hasError={errors.todolistID?.hasError}
+          ref={todolistIDRef}
           labelHidden={true}
-          {...getOverrideProps(overrides, "toDo_s")}
+          {...getOverrideProps(overrides, "todolistID")}
         ></Autocomplete>
       </ArrayField>
+      <TextField
+        label="Created date"
+        isRequired={false}
+        isReadOnly={false}
+        type="datetime-local"
+        value={createdDate && convertToLocal(new Date(createdDate))}
+        onChange={(e) => {
+          let value =
+            e.target.value === "" ? "" : new Date(e.target.value).toISOString();
+          if (onChange) {
+            const modelFields = {
+              title,
+              desc,
+              priority,
+              todolistID,
+              createdDate: value,
+              completedDate,
+              dueDate,
+            };
+            const result = onChange(modelFields);
+            value = result?.createdDate ?? value;
+          }
+          if (errors.createdDate?.hasError) {
+            runValidationTasks("createdDate", value);
+          }
+          setCreatedDate(value);
+        }}
+        onBlur={() => runValidationTasks("createdDate", createdDate)}
+        errorMessage={errors.createdDate?.errorMessage}
+        hasError={errors.createdDate?.hasError}
+        {...getOverrideProps(overrides, "createdDate")}
+      ></TextField>
+      <TextField
+        label="Completed date"
+        isRequired={false}
+        isReadOnly={false}
+        type="datetime-local"
+        value={completedDate && convertToLocal(new Date(completedDate))}
+        onChange={(e) => {
+          let value =
+            e.target.value === "" ? "" : new Date(e.target.value).toISOString();
+          if (onChange) {
+            const modelFields = {
+              title,
+              desc,
+              priority,
+              todolistID,
+              createdDate,
+              completedDate: value,
+              dueDate,
+            };
+            const result = onChange(modelFields);
+            value = result?.completedDate ?? value;
+          }
+          if (errors.completedDate?.hasError) {
+            runValidationTasks("completedDate", value);
+          }
+          setCompletedDate(value);
+        }}
+        onBlur={() => runValidationTasks("completedDate", completedDate)}
+        errorMessage={errors.completedDate?.errorMessage}
+        hasError={errors.completedDate?.hasError}
+        {...getOverrideProps(overrides, "completedDate")}
+      ></TextField>
+      <TextField
+        label="Due date"
+        isRequired={false}
+        isReadOnly={false}
+        type="datetime-local"
+        value={dueDate && convertToLocal(new Date(dueDate))}
+        onChange={(e) => {
+          let value =
+            e.target.value === "" ? "" : new Date(e.target.value).toISOString();
+          if (onChange) {
+            const modelFields = {
+              title,
+              desc,
+              priority,
+              todolistID,
+              createdDate,
+              completedDate,
+              dueDate: value,
+            };
+            const result = onChange(modelFields);
+            value = result?.dueDate ?? value;
+          }
+          if (errors.dueDate?.hasError) {
+            runValidationTasks("dueDate", value);
+          }
+          setDueDate(value);
+        }}
+        onBlur={() => runValidationTasks("dueDate", dueDate)}
+        errorMessage={errors.dueDate?.errorMessage}
+        hasError={errors.dueDate?.hasError}
+        {...getOverrideProps(overrides, "dueDate")}
+      ></TextField>
       <Flex
         justifyContent="space-between"
         {...getOverrideProps(overrides, "CTAFlex")}
