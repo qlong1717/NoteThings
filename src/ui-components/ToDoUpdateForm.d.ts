@@ -27,7 +27,6 @@ export declare type ToDoUpdateFormInputValues = {
     desc?: string;
     priority?: string;
     todolistID?: string;
-    createdDate?: string;
     completedDate?: string;
     dueDate?: string;
 };
@@ -36,18 +35,18 @@ export declare type ToDoUpdateFormValidationValues = {
     desc?: ValidationFunction<string>;
     priority?: ValidationFunction<string>;
     todolistID?: ValidationFunction<string>;
-    createdDate?: ValidationFunction<string>;
     completedDate?: ValidationFunction<string>;
     dueDate?: ValidationFunction<string>;
 };
 export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
 export declare type ToDoUpdateFormOverridesProps = {
     ToDoUpdateFormGrid?: PrimitiveOverrideProps<GridProps>;
+    RowGrid0?: PrimitiveOverrideProps<GridProps>;
     title?: PrimitiveOverrideProps<TextFieldProps>;
     desc?: PrimitiveOverrideProps<TextFieldProps>;
     priority?: PrimitiveOverrideProps<SelectFieldProps>;
     todolistID?: PrimitiveOverrideProps<AutocompleteProps>;
-    createdDate?: PrimitiveOverrideProps<TextFieldProps>;
+    RowGrid2?: PrimitiveOverrideProps<GridProps>;
     completedDate?: PrimitiveOverrideProps<TextFieldProps>;
     dueDate?: PrimitiveOverrideProps<TextFieldProps>;
 } & EscapeHatchProps;

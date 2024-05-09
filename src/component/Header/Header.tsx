@@ -1,9 +1,7 @@
-import React, { PropsWithChildren, useState } from 'react'
+import React from 'react'
 import type { WithAuthenticatorProps } from '@aws-amplify/ui-react';
 import { Label, Text, Image, Menu, MenuItem, Divider ,View, MenuButton } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
 import './Header.css'
-import '../../ui-components'
 
 const Header: React.FC<WithAuthenticatorProps & { setPopup: React.Dispatch<React.SetStateAction<number>> }> = ({ signOut, user, setPopup }) => {
 
@@ -23,9 +21,7 @@ const Header: React.FC<WithAuthenticatorProps & { setPopup: React.Dispatch<React
               </MenuButton>
               }>
               <MenuItem onClick={()=>setPopup(1)}>Create ToDoList</MenuItem>
-              <MenuItem onClick={()=>setPopup(2)}>Update ToDoList</MenuItem>
-              <MenuItem onClick={()=>setPopup(3)}>Create ToDo</MenuItem>
-              <MenuItem onClick={()=>setPopup(4)}>Update Todo</MenuItem>
+              <MenuItem onClick={()=>setPopup(2)}>Create ToDo</MenuItem>
               <Divider />
               <MenuItem onClick={signOut}>Sign Out</MenuItem>
             </Menu>

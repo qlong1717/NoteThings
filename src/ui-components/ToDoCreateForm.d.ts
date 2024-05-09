@@ -5,7 +5,7 @@
  **************************************************************************/
 
 import * as React from "react";
-import { AutocompleteProps, GridProps, SelectFieldProps, TextFieldProps } from "@aws-amplify/ui-react";
+import { AutocompleteProps, GridProps, HeadingProps, SelectFieldProps, TextFieldProps } from "@aws-amplify/ui-react";
 export declare type EscapeHatchProps = {
     [elementHierarchy: string]: Record<string, unknown>;
 } | null;
@@ -26,7 +26,6 @@ export declare type ToDoCreateFormInputValues = {
     desc?: string;
     priority?: string;
     todolistID?: string;
-    createdDate?: string;
     completedDate?: string;
     dueDate?: string;
 };
@@ -35,18 +34,19 @@ export declare type ToDoCreateFormValidationValues = {
     desc?: ValidationFunction<string>;
     priority?: ValidationFunction<string>;
     todolistID?: ValidationFunction<string>;
-    createdDate?: ValidationFunction<string>;
     completedDate?: ValidationFunction<string>;
     dueDate?: ValidationFunction<string>;
 };
 export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
 export declare type ToDoCreateFormOverridesProps = {
     ToDoCreateFormGrid?: PrimitiveOverrideProps<GridProps>;
+    SectionalElement0?: PrimitiveOverrideProps<HeadingProps>;
+    RowGrid1?: PrimitiveOverrideProps<GridProps>;
     title?: PrimitiveOverrideProps<TextFieldProps>;
     desc?: PrimitiveOverrideProps<TextFieldProps>;
     priority?: PrimitiveOverrideProps<SelectFieldProps>;
     todolistID?: PrimitiveOverrideProps<AutocompleteProps>;
-    createdDate?: PrimitiveOverrideProps<TextFieldProps>;
+    RowGrid3?: PrimitiveOverrideProps<GridProps>;
     completedDate?: PrimitiveOverrideProps<TextFieldProps>;
     dueDate?: PrimitiveOverrideProps<TextFieldProps>;
 } & EscapeHatchProps;

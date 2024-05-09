@@ -1,3 +1,20 @@
 :root{
-  background-color:#121212;
+  background-color:hsl(210, 25%, 25%);
+}
+.table-conent{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+/* styles.css */
+.amplify-pagination {
+  margin-top: 20px;
+  --amplify-components-pagination-current-background-color: var(
+    --amplify-colors-green-80
+  );
+  --amplify-components-pagination-button-hover-background-color: var(
+    --amplify-colors-purple-90
+  );
 }

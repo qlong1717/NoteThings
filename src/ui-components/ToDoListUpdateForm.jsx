@@ -309,9 +309,9 @@ export default function ToDoListUpdateForm(props) {
   return (
     <Grid
       as="form"
-      rowGap={tokens.space.xxs.value}
-      columnGap={tokens.space.xxs.value}
-      padding={tokens.space.xxs.value}
+      rowGap={tokens.space.small.value}
+      columnGap={tokens.space.small.value}
+      padding={tokens.space.small.value}
       onSubmit={async (event) => {
         event.preventDefault();
         let modelFields = {
@@ -583,7 +583,7 @@ export default function ToDoListUpdateForm(props) {
           {...getOverrideProps(overrides, "ResetButton")}
         ></Button>
         <Flex
-          gap={tokens.space.xxs.value}
+          gap={tokens.space.small.value}
           {...getOverrideProps(overrides, "RightAlignCTASubFlex")}
         >
           <Button

@@ -191,6 +191,7 @@ export default function ToDoListCreateForm(props) {
     overrides,
     ...rest
   } = props;
+  const { tokens } = useTheme();
   const initialValues = {
     title: "",
     desc: "",
@@ -283,9 +284,14 @@ export default function ToDoListCreateForm(props) {
   return (
     <Grid
       as="form"
-      rowGap="15px"
-      columnGap="15px"
-      padding="20px"
+      rowGap={tokens.space.xxxs.value}
+      columnGap={tokens.space.xxxs.value}
+      padding={tokens.space.small.value}
+      transform="translate(150%, 25%)"
+      zIndex= "9999"
+      backgroundColor="white"
+      borderRadius="8px"
+      position="fixed"
       onSubmit={async (event) => {
         event.preventDefault();
         let modelFields = {
@@ -521,7 +527,7 @@ export default function ToDoListCreateForm(props) {
           {...getOverrideProps(overrides, "ClearButton")}
         ></Button>
         <Flex
-          gap="15px"
+          gap={tokens.space.xxxs.value}
           {...getOverrideProps(overrides, "RightAlignCTASubFlex")}
         >
           <Button

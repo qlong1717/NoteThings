@@ -13,6 +13,7 @@ import {
   Divider,
   Flex,
   Grid,
+  Heading,
   Icon,
   ScrollView,
   SelectField,
@@ -192,12 +193,12 @@ export default function ToDoCreateForm(props) {
     overrides,
     ...rest
   } = props;
+  const { tokens } = useTheme();
   const initialValues = {
     title: "",
     desc: "",
     priority: "",
     todolistID: undefined,
-    createdDate: "",
     completedDate: "",
     dueDate: "",
   };
@@ -209,9 +210,6 @@ export default function ToDoCreateForm(props) {
   const [todolistIDRecords, setTodolistIDRecords] = React.useState([]);
   const [selectedTodolistIDRecords, setSelectedTodolistIDRecords] =
     React.useState([]);
-  const [createdDate, setCreatedDate] = React.useState(
-    initialValues.createdDate
-  );
   const [completedDate, setCompletedDate] = React.useState(
     initialValues.completedDate
   );
@@ -225,7 +223,6 @@ export default function ToDoCreateForm(props) {
     setTodolistID(initialValues.todolistID);
     setCurrentTodolistIDValue(undefined);
     setCurrentTodolistIDDisplayValue("");
-    setCreatedDate(initialValues.createdDate);
     setCompletedDate(initialValues.completedDate);
     setDueDate(initialValues.dueDate);
     setErrors({});
@@ -243,7 +240,6 @@ export default function ToDoCreateForm(props) {
     desc: [],
     priority: [{ type: "Required" }],
     todolistID: [{ type: "Required" }],
-    createdDate: [],
     completedDate: [],
     dueDate: [],
   };
@@ -314,9 +310,16 @@ export default function ToDoCreateForm(props) {
   return (
     <Grid
       as="form"
-      rowGap="15px"
-      columnGap="15px"
-      padding="20px"
+      rowGap="5px"
+      columnGap="5px"
+      padding="10px"
+      borderRadius="8px"
+      position="fixed"
+      width="45%"
+      left="28%"
+      top="15%"
+      zIndex= "3"
+      backgroundColor="Menu"
       onSubmit={async (event) => {
         event.preventDefault();
         let modelFields = {
@@ -324,7 +327,6 @@ export default function ToDoCreateForm(props) {
           desc,
           priority,
           todolistID,
-          createdDate,
           completedDate,
           dueDate,
         };
@@ -380,122 +382,136 @@ export default function ToDoCreateForm(props) {
       {...getOverrideProps(overrides, "ToDoCreateForm")}
       {...rest}
     >
-      <TextField
-        label="Title"
-        isRequired={true}
-        isReadOnly={false}
-        value={title}
-        onChange={(e) => {
-          let { value } = e.target;
-          if (onChange) {
-            const modelFields = {
-              title: value,
-              desc,
-              priority,
-              todolistID,
-              createdDate,
-              completedDate,
-              dueDate,
-            };
-            const result = onChange(modelFields);
-            value = result?.title ?? value;
-          }
-          if (errors.title?.hasError) {
-            runValidationTasks("title", value);
-          }
-          setTitle(value);
-        }}
-        onBlur={() => runValidationTasks("title", title)}
-        errorMessage={errors.title?.errorMessage}
-        hasError={errors.title?.hasError}
-        {...getOverrideProps(overrides, "title")}
-      ></TextField>
-      <TextField
-        label="Desc"
-        isRequired={false}
-        isReadOnly={false}
-        value={desc}
-        onChange={(e) => {
-          let { value } = e.target;
-          if (onChange) {
-            const modelFields = {
-              title,
-              desc: value,
-              priority,
-              todolistID,
-              createdDate,
-              completedDate,
-              dueDate,
-            };
-            const result = onChange(modelFields);
-            value = result?.desc ?? value;
-          }
-          if (errors.desc?.hasError) {
-            runValidationTasks("desc", value);
-          }
-          setDesc(value);
-        }}
-        onBlur={() => runValidationTasks("desc", desc)}
-        errorMessage={errors.desc?.errorMessage}
-        hasError={errors.desc?.hasError}
-        {...getOverrideProps(overrides, "desc")}
-      ></TextField>
-      <SelectField
-        label="Priority"
-        placeholder="Please select an option"
-        isDisabled={false}
-        value={priority}
-        onChange={(e) => {
-          let { value } = e.target;
-          if (onChange) {
-            const modelFields = {
-              title,
-              desc,
-              priority: value,
-              todolistID,
-              createdDate,
-              completedDate,
-              dueDate,
-            };
-            const result = onChange(modelFields);
-            value = result?.priority ?? value;
-          }
-          if (errors.priority?.hasError) {
-            runValidationTasks("priority", value);
-          }
-          setPriority(value);
-        }}
-        onBlur={() => runValidationTasks("priority", priority)}
-        errorMessage={errors.priority?.errorMessage}
-        hasError={errors.priority?.hasError}
-        {...getOverrideProps(overrides, "priority")}
+      <Heading
+        level={5}
+        children="Create ToDo"
+        {...getOverrideProps(overrides, "SectionalElement0")}
+      ></Heading>
+      <Grid
+        columnGap="inherit"
+        rowGap="inherit"
+        templateColumns="repeat(3, auto)"
+        {...getOverrideProps(overrides, "RowGrid1")}
       >
-        <option
-          children="Highest"
-          value="HIGHEST"
-          {...getOverrideProps(overrides, "priorityoption0")}
-        ></option>
-        <option
-          children="High"
-          value="HIGH"
-          {...getOverrideProps(overrides, "priorityoption1")}
-        ></option>
-        <option
-          children="Medium"
-          value="MEDIUM"
-          {...getOverrideProps(overrides, "priorityoption2")}
-        ></option>
-        <option
-          children="Low"
-          value="LOW"
-          {...getOverrideProps(overrides, "priorityoption3")}
-        ></option>
-        <option
-          children="Lowest"
-          value="LOWEST"
-          {...getOverrideProps(overrides, "priorityoption4")}
-        ></option>
-      </SelectField>
+        <TextField
+          label={
+            <span style={{ display: "inline-flex" }}>
+              <span>Title</span>
+              <span style={{ color: "red" }}>*</span>
+            </span>
+          }
+          isRequired={true}
+          isReadOnly={false}
+          value={title}
+          onChange={(e) => {
+            let { value } = e.target;
+            if (onChange) {
+              const modelFields = {
+                title: value,
+                desc,
+                priority,
+                todolistID,
+                completedDate,
+                dueDate,
+              };
+              const result = onChange(modelFields);
+              value = result?.title ?? value;
+            }
+            if (errors.title?.hasError) {
+              runValidationTasks("title", value);
+            }
+            setTitle(value);
+          }}
+          onBlur={() => runValidationTasks("title", title)}
+          errorMessage={errors.title?.errorMessage}
+          hasError={errors.title?.hasError}
+          {...getOverrideProps(overrides, "title")}
+        ></TextField>
+        <TextField
+          label="Desc"
+          isRequired={false}
+          isReadOnly={false}
+          value={desc}
+          onChange={(e) => {
+            let { value } = e.target;
+            if (onChange) {
+              const modelFields = {
+                title,
+                desc: value,
+                priority,
+                todolistID,
+                completedDate,
+                dueDate,
+              };
+              const result = onChange(modelFields);
+              value = result?.desc ?? value;
+            }
+            if (errors.desc?.hasError) {
+              runValidationTasks("desc", value);
+            }
+            setDesc(value);
+          }}
+          onBlur={() => runValidationTasks("desc", desc)}
+          errorMessage={errors.desc?.errorMessage}
+          hasError={errors.desc?.hasError}
+          {...getOverrideProps(overrides, "desc")}
+        ></TextField>
+        <SelectField
+          label="Priority"
+          placeholder="Please select an option"
+          isDisabled={false}
+          value={priority}
+          onChange={(e) => {
+            let { value } = e.target;
+            if (onChange) {
+              const modelFields = {
+                title,
+                desc,
+                priority: value,
+                todolistID,
+                completedDate,
+                dueDate,
+              };
+              const result = onChange(modelFields);
+              value = result?.priority ?? value;
+            }
+            if (errors.priority?.hasError) {
+              runValidationTasks("priority", value);
+            }
+            setPriority(value);
+          }}
+          onBlur={() => runValidationTasks("priority", priority)}
+          errorMessage={errors.priority?.errorMessage}
+          hasError={errors.priority?.hasError}
+          {...getOverrideProps(overrides, "priority")}
+        >
+          <option
+            children="Highest"
+            value="HIGHEST"
+            {...getOverrideProps(overrides, "priorityoption0")}
+          ></option>
+          <option
+            children="High"
+            value="HIGH"
+            {...getOverrideProps(overrides, "priorityoption1")}
+          ></option>
+          <option
+            children="Medium"
+            value="MEDIUM"
+            {...getOverrideProps(overrides, "priorityoption2")}
+          ></option>
+          <option
+            children="Low"
+            value="LOW"
+            {...getOverrideProps(overrides, "priorityoption3")}
+          ></option>
+          <option
+            children="Lowest"
+            value="LOWEST"
+            {...getOverrideProps(overrides, "priorityoption4")}
+          ></option>
+        </SelectField>
+      </Grid>
       <ArrayField
         lengthLimit={1}
         onChange={async (items) => {
@@ -506,7 +522,6 @@ export default function ToDoCreateForm(props) {
               desc,
               priority,
               todolistID: value,
-              createdDate,
               completedDate,
               dueDate,
             };
@@ -517,7 +532,12 @@ export default function ToDoCreateForm(props) {
           setCurrentTodolistIDValue(undefined);
         }}
         currentFieldValue={currentTodolistIDValue}
-        label={"Todolist"}
+        label={
+          <span style={{ display: "inline-flex" }}>
+            <span>Todolist</span>
+            <span style={{ color: "red" }}>*</span>
+          </span>
+        }
         items={todolistID ? [todolistID] : []}
         hasError={errors?.todolistID?.hasError}
         runValidationTasks={async () =>
@@ -551,7 +571,12 @@ export default function ToDoCreateForm(props) {
         defaultFieldValue={""}
       >
         <Autocomplete
-          label="Todolist"
+          label={
+            <span style={{ display: "inline-flex" }}>
+              <span>Todolist</span>
+              <span style={{ color: "red" }}>*</span>
+            </span>
+          }
           isRequired={true}
           isReadOnly={false}
           placeholder="Search ToDoList"
@@ -593,102 +618,79 @@ export default function ToDoCreateForm(props) {
           {...getOverrideProps(overrides, "todolistID")}
         ></Autocomplete>
       </ArrayField>
-      <TextField
-        label="Created date"
-        isRequired={false}
-        isReadOnly={false}
-        type="datetime-local"
-        value={createdDate && convertToLocal(new Date(createdDate))}
-        onChange={(e) => {
-          let value =
-            e.target.value === "" ? "" : new Date(e.target.value).toISOString();
-          if (onChange) {
-            const modelFields = {
-              title,
-              desc,
-              priority,
-              todolistID,
-              createdDate: value,
-              completedDate,
-              dueDate,
-            };
-            const result = onChange(modelFields);
-            value = result?.createdDate ?? value;
-          }
-          if (errors.createdDate?.hasError) {
-            runValidationTasks("createdDate", value);
-          }
-          setCreatedDate(value);
-        }}
-        onBlur={() => runValidationTasks("createdDate", createdDate)}
-        errorMessage={errors.createdDate?.errorMessage}
-        hasError={errors.createdDate?.hasError}
-        {...getOverrideProps(overrides, "createdDate")}
-      ></TextField>
-      <TextField
-        label="Completed date"
-        isRequired={false}
-        isReadOnly={false}
-        type="datetime-local"
-        value={completedDate && convertToLocal(new Date(completedDate))}
-        onChange={(e) => {
-          let value =
-            e.target.value === "" ? "" : new Date(e.target.value).toISOString();
-          if (onChange) {
-            const modelFields = {
-              title,
-              desc,
-              priority,
-              todolistID,
-              createdDate,
-              completedDate: value,
-              dueDate,
-            };
-            const result = onChange(modelFields);
-            value = result?.completedDate ?? value;
-          }
-          if (errors.completedDate?.hasError) {
-            runValidationTasks("completedDate", value);
-          }
-          setCompletedDate(value);
-        }}
-        onBlur={() => runValidationTasks("completedDate", completedDate)}
-        errorMessage={errors.completedDate?.errorMessage}
-        hasError={errors.completedDate?.hasError}
-        {...getOverrideProps(overrides, "completedDate")}
-      ></TextField>
-      <TextField
-        label="Due date"
-        isRequired={false}
-        isReadOnly={false}
-        type="datetime-local"
-        value={dueDate && convertToLocal(new Date(dueDate))}
-        onChange={(e) => {
-          let value =
-            e.target.value === "" ? "" : new Date(e.target.value).toISOString();
-          if (onChange) {
-            const modelFields = {
-              title,
-              desc,
-              priority,
-              todolistID,
-              createdDate,
-              completedDate,
-              dueDate: value,
-            };
-            const result = onChange(modelFields);
-            value = result?.dueDate ?? value;
-          }
-          if (errors.dueDate?.hasError) {
-            runValidationTasks("dueDate", value);
-          }
-          setDueDate(value);
-        }}
-        onBlur={() => runValidationTasks("dueDate", dueDate)}
-        errorMessage={errors.dueDate?.errorMessage}
-        hasError={errors.dueDate?.hasError}
-        {...getOverrideProps(overrides, "dueDate")}
-      ></TextField>
+      <Grid
+        columnGap="inherit"
+        rowGap="inherit"
+        templateColumns="repeat(2, auto)"
+        {...getOverrideProps(overrides, "RowGrid3")}
+      >
+        <TextField
+          label="Completed date"
+          isRequired={false}
+          isReadOnly={false}
+          type="datetime-local"
+          value={completedDate && convertToLocal(new Date(completedDate))}
+          onChange={(e) => {
+            let value =
+              e.target.value === ""
+                ? ""
+                : new Date(e.target.value).toISOString();
+            if (onChange) {
+              const modelFields = {
+                title,
+                desc,
+                priority,
+                todolistID,
+                completedDate: value,
+                dueDate,
+              };
+              const result = onChange(modelFields);
+              value = result?.completedDate ?? value;
+            }
+            if (errors.completedDate?.hasError) {
+              runValidationTasks("completedDate", value);
+            }
+            setCompletedDate(value);
+          }}
+          onBlur={() => runValidationTasks("completedDate", completedDate)}
+          errorMessage={errors.completedDate?.errorMessage}
+          hasError={errors.completedDate?.hasError}
+          {...getOverrideProps(overrides, "completedDate")}
+        ></TextField>
+        <TextField
+          label="Due date"
+          isRequired={false}
+          isReadOnly={false}
+          type="datetime-local"
+          value={dueDate && convertToLocal(new Date(dueDate))}
+          onChange={(e) => {
+            let value =
+              e.target.value === ""
+                ? ""
+                : new Date(e.target.value).toISOString();
+            if (onChange) {
+              const modelFields = {
+                title,
+                desc,
+                priority,
+                todolistID,
+                completedDate,
+                dueDate: value,
+              };
+              const result = onChange(modelFields);
+              value = result?.dueDate ?? value;
+            }
+            if (errors.dueDate?.hasError) {
+              runValidationTasks("dueDate", value);
+            }
+            setDueDate(value);
+          }}
+          onBlur={() => runValidationTasks("dueDate", dueDate)}
+          errorMessage={errors.dueDate?.errorMessage}
+          hasError={errors.dueDate?.hasError}
+          {...getOverrideProps(overrides, "dueDate")}
+        ></TextField>
+      </Grid>
       <Flex
         justifyContent="space-between"
         {...getOverrideProps(overrides, "CTAFlex")}
@@ -703,7 +705,7 @@ export default function ToDoCreateForm(props) {
           {...getOverrideProps(overrides, "ClearButton")}
         ></Button>
         <Flex
-          gap="15px"
+          gap="5px"
           {...getOverrideProps(overrides, "RightAlignCTASubFlex")}
         >
           <Button
