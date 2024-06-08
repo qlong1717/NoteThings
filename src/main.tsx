@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import '@aws-amplify/ui-react/styles.css';
 import { ThemeProvider } from '@aws-amplify/ui-react';

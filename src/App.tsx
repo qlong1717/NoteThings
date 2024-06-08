@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { WithAuthenticatorProps } from '@aws-amplify/ui-react';
-import { withAuthenticator, Table, TableHead, TableRow, TableCell, TableBody, Heading, Label, Button, TableFoot, Pagination } from '@aws-amplify/ui-react';
+import { withAuthenticator, Table, TableHead, TableRow, TableCell, TableBody, Label, Button, Pagination } from '@aws-amplify/ui-react';
 import './App.css';
 import Header from './component/Header/Header';
 import { ToDoCreateForm, ToDoListCreateForm, ToDoListUpdateForm, ToDoUpdateForm } from './ui-components';
@@ -27,7 +27,6 @@ export function App({ signOut, user }: WithAuthenticatorProps) {
   const id = useRef(null);
   const item = useRef({})
   const nextToken = useRef("")
-  const [loading, setLoading] = useState(false);
   const client = generateClient();
   const ToDoAll = useRef(0);
   const limitPage = 3;
@@ -47,7 +46,7 @@ export function App({ signOut, user }: WithAuthenticatorProps) {
   }
 
   const fecthToDoData = async (value: any) =>{
-    setLoading(true);
+    
     try {
       let variables: { limit: number; filter: { or: ({ title: { contains: string }; id?: undefined; } | { id: { contains: string }; title?: undefined; })[]; }; nextToken?: string } = {
         limit: limitPage,
@@ -72,7 +71,7 @@ export function App({ signOut, user }: WithAuthenticatorProps) {
     } catch (error) {
       console.error('Error fetching todo list:', error);
     } finally {
-      setLoading(false);
+      
     }
   }
 
