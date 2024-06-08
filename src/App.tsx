@@ -3,7 +3,7 @@ import type { WithAuthenticatorProps } from '@aws-amplify/ui-react';
 import { withAuthenticator, Table, TableHead, TableRow, TableCell, TableBody, Label, Button, Pagination } from '@aws-amplify/ui-react';
 import './App.css';
 import Header from './component/Header/Header';
-import { ToDoCreateForm, ToDoListCreateForm, ToDoListUpdateForm, ToDoUpdateForm } from './ui-components';
+import { ToDoCreateForm, ToDoListCreateForm, ToDoUpdateForm } from './ui-components';
 import { ComponentType } from 'react';
 import { generateClient } from "aws-amplify/api";
 import { listToDos } from "./graphql/queries";
